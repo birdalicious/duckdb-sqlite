@@ -5,7 +5,7 @@
 require sqlite_scanner
 
 statement ok
-ATTACH 'sqlite:__TEST_DIR__/attach_replacement.db' AS s
+ATTACH 'sqlite:{TEST_DIR}/attach_replacement.db' AS s
 
 statement ok
 CREATE TABLE s.integers(i INTEGER)
@@ -18,7 +18,7 @@ DETACH s
 
 # attach automatically finds out this is a sqlite file
 statement ok
-ATTACH '__TEST_DIR__/attach_replacement.db' AS s
+ATTACH '{TEST_DIR}/attach_replacement.db' AS s
 
 query I
 SELECT * FROM s.integers
@@ -29,7 +29,7 @@ statement ok
 DETACH s
 
 statement ok
-ATTACH '__TEST_DIR__/attach_replacement.db' AS s (TYPE sqlite)
+ATTACH '{TEST_DIR}/attach_replacement.db' AS s (TYPE sqlite)
 
 query I
 SELECT * FROM s.integers

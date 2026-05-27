@@ -13,7 +13,7 @@ SELECT expressions FROM duckdb_indexes() WHERE index_name='idx_actor_last_name';
 [last_name]
 
 statement ok
-ATTACH '__TEST_DIR__/sakila.duckdb' AS sakila_duck;
+ATTACH '{TEST_DIR}/sakila.duckdb' AS sakila_duck;
 
 statement ok
 COPY FROM DATABASE s TO sakila_duck
@@ -27,7 +27,7 @@ statement ok
 DETACH sakila_duck;
 
 statement ok
-ATTACH '__TEST_DIR__/sakila.duckdb' AS sakila_duck;
+ATTACH '{TEST_DIR}/sakila.duckdb' AS sakila_duck;
 
 query IIII
 SELECT * FROM sakila_duck.store WHERE manager_staff_id=2;

@@ -59,6 +59,86 @@ jobs:
     - name: Test extension
       env: 
         LOCAL_EXTENSION_REPO: ${{ github.workspace }}/build/release/repository/
+        SQLITE_TPCH_GENERATED: 1
       run: |
+        make data/db/tpch.db
         ./build/release/test/unittest 'test/*'
 
+  linux-sanitized:
+    name: Linux ${{ matrix.sanitizer.name }} (amd64)
+    needs: linux
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        sanitizer:
+        - name: ASan
+          threadsan_enabled: 0
+        - name: TSan
+          threadsan_enabled: 1
+
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 2
+      GEN: ninja
+      CC: 'ccache gcc'
+      CXX: 'ccache g++'
+      CCACHE_DIR: ${{ github.workspace }}/ccache
+
+    steps:
+
+    - name: Free disk space
+      uses: endersonmenezes/free-disk-space@v2.1.1
+      continue-on-error: true
+      with:
+        remove_haskell: true
+        remove_tool_cache: true
+        remove_folders: "/usr/local/share/powershell /usr/share/swift"
+        testing: false
+
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        submodules: 'true'
+
+    - name: Install required ubuntu packages
+      run: |
+        sudo apt-get update -y -q -o=Dpkg::Use-Pty=0
+        sudo apt-get install -y -q -o=Dpkg::Use-Pty=0 \
+          build-essential \
+          ccache \
+          cmake \
+          mold \
+          ninja-build
+
+    - name: Cache Key
+      id: cache_key
+      working-directory: ./duckdb
+      run: |
+        DUCKDB_VERSION=$(git rev-parse --short HEAD)
+        KEY="${{ runner.os }}-${{ runner.arch }}-$DUCKDB_VERSION"-relassert-${{ matrix.sanitizer.name }}
+        echo "value=${KEY}" >> "${GITHUB_OUTPUT}"
+
+    - name: Restore Cache
+      uses: actions/cache/restore@v5
+      with:
+        path: ${{ github.workspace }}/ccache
+        key: ${{ steps.cache_key.outputs.value }}
+
+    - name: Build extension
+      env:
+        THREADSAN: ${{ matrix.sanitizer.threadsan_enabled }}
+      run: |
+        make relassert
+        cat ./build/relassert/build.ninja | grep fsanitize | head -n 1
+
+    - name: Save Cache
+      uses: actions/cache/save@v5
+      with:
+        path: ${{ github.workspace }}/ccache
+        key: ${{ steps.cache_key.outputs.value }}
+
+    - name: Test extension
+      env: 
+        LOCAL_EXTENSION_REPO: ${{ github.workspace }}/build/relassert/repository/
+      run: |
+        ./build/relassert/test/unittest

@@ -27,7 +27,7 @@ WHERE a1.name!=a2.name and a1.name='Checking';
 2018-02-20 10:59:00	Checking	250.00
 
 statement ok
-ATTACH '__TEST_DIR__/target.db' AS ddb;
+ATTACH '{TEST_DIR}/target.db' AS ddb;
 
 statement ok
 COPY FROM DATABASE s to ddb;
@@ -58,7 +58,7 @@ statement ok
 DETACH ddb
 
 statement ok
-ATTACH '__TEST_DIR__/target.db' AS ddb;
+ATTACH '{TEST_DIR}/target.db' AS ddb;
 
 statement ok
 USE ddb

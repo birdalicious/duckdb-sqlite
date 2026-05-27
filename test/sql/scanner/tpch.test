@@ -14,9 +14,9 @@ require tpch
 loop i 1 9
 
 query I
-PRAGMA tpch(${i})
+PRAGMA tpch({i})
 ----
-<FILE>:duckdb/extension/tpch/dbgen/answers/sf0.1/q0${i}.csv
+<FILE>:duckdb/extension/tpch/dbgen/answers/sf0.1/q0{i}.csv
 
 endloop
 
@@ -24,18 +24,18 @@ endloop
 loop i 10 15
 
 query I
-PRAGMA tpch(${i})
+PRAGMA tpch({i})
 ----
-<FILE>:duckdb/extension/tpch/dbgen/answers/sf0.1/q${i}.csv
+<FILE>:duckdb/extension/tpch/dbgen/answers/sf0.1/q{i}.csv
 
 endloop
 
 loop i 16 23
 
 query I
-PRAGMA tpch(${i})
+PRAGMA tpch({i})
 ----
-<FILE>:duckdb/extension/tpch/dbgen/answers/sf0.1/q${i}.csv
+<FILE>:duckdb/extension/tpch/dbgen/answers/sf0.1/q{i}.csv
 
 endloop
 

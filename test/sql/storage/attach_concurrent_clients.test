@@ -4,10 +4,10 @@
 
 require sqlite_scanner
 
-require nowindows
+require notwindows
 
 statement ok
-ATTACH '__TEST_DIR__/attach_concurrentclients.db' AS s1 (TYPE SQLITE)
+ATTACH '{TEST_DIR}/attach_concurrentclients.db' AS s1 (TYPE SQLITE)
 
 statement ok
 CREATE TABLE s1.tbl(i INTEGER);
@@ -18,7 +18,7 @@ concurrentloop i 0 10
 loop k 0 10
 
 statement maybe
-INSERT INTO s1.tbl VALUES (${i} + ${k})
+INSERT INTO s1.tbl VALUES ({i} + {k})
 ----
 database is locked
 
